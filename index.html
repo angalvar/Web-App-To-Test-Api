@@ -1,0 +1,114 @@
+<html>
+<head>
+	<title>Test Api Web App</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.12/vue.min.js" integrity="sha512-BKbSR+cfyxLdMAsE0naLReFSLg8/pjbgfxHh/k/kUC82Hy7r6HtR5hLhobaln2gcTvzkyyehrdREdjpsQwy2Jw==" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js" integrity="sha512-quHCp3WbBNkwLfYUMd+KwBAgpVukJu5MncuQaWXgCrfgcxCJAq/fo+oqrRKOj+UKEmyMCG3tb8RB63W+EmrOBg==" crossorigin="anonymous"></script>
+	<!-- Bootstrap CSS -->
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+	integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+	crossorigin="anonymous">
+</head>
+<body>
+	Probando Api con Vue y Bootstrap <br>
+	
+	<div id="application">
+		<form method="POST" action="" name="frmLogin">
+                        <div class="form-group row">
+                            <label for="email" class="col-md-4 col-form-label text-md-right">Email</label>
+
+                            <div class="col-md-6">
+                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="" required autocomplete="email" autofocus>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
+                            <div class="col-md-6">
+                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">                               
+                            </div>
+                        </div>
+
+                       
+
+                        <div class="form-group row mb-0">
+                            <div class="col-md-8 offset-md-4">
+                                <button type="button" class="btn btn-primary" v-on:click="login()">
+                                    Login
+                                </button>
+
+                               
+                            </div>
+                        </div>
+                        
+                    </form>
+		<button v-on:click="getClients()">Get Clients</button>
+		<table class="table table-striped">
+			<tr>
+				<th scope="col">Id</th>
+				<th scope="col">Identification</th>
+				<th scope="col">Name</th>
+				<th scope="col">Status</th>
+			</tr>
+			<tr class="table-success" v-for="client in info.data">
+        		<td scope="row">{{ client.id }}</td>
+        		<td>{{ client.identification }}</td>
+        		<td>{{ client.name }}</td>
+        		<td>{{ client.status }}</td>
+        	</tr>
+		  </table>
+	</div>
+	
+	<script>
+		var token = ''
+		var app = new Vue({
+		  el: '#application',
+		  data () {
+		    return {
+		      info: []
+		    }
+		  },
+         
+
+		  methods: {
+		  	getClients:function () { 
+		  		if (token == '') {
+		  			alert('Must log in');
+			    } else {
+				    axios
+				      .get('http://localhost/apilaravel2/public/api/clients', {
+						  headers: {
+						    'Authorization': 'Bearer ' + token
+						  }
+						})
+				      .then(response => (this.info = response.data))
+			    }
+		  	},
+		  	login:function(){
+		  					    	
+			    	axios
+			      .post('http://localhost/apilaravel2/public/api/login',
+						{ 
+							email: document.getElementById('email').value, 
+							password: document.getElementById('password').value
+						}, 
+						{
+							// Config
+						}
+			      	)
+			      .then(function (response) {
+			      	//console.log(response);
+						    //console.log(response.data.data.token);
+						    if (response.data.success == true) {
+						    	token = response.data.data.token;
+
+						    }
+						    alert(response.data.message);
+						  })
+			      console.log(token);
+		  	}
+		  }
+		})
+	</script>
+</body>
+</html>
